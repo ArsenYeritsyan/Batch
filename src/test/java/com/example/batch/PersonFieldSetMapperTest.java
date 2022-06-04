@@ -1,4 +1,3 @@
 package com.example.batch;
 
-public class PersonFieldSetMapperTest {
-}
+public class PersonFieldSetMapperTest {}

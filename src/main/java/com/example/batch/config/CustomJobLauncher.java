@@ -11,7 +11,6 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
-
 import java.util.UUID;
 
 @Slf4j
@@ -20,23 +19,25 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CustomJobLauncher implements CommandLineRunner {
 
-    private final JobLauncher jobLauncher;
+  private final JobLauncher jobLauncher;
 
-    private final Job job;
+  private final Job job;
 
-    public void scheduleByFixedRate() throws Exception {
-        log.info("Batch job starting");
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addString("date", UUID.randomUUID().toString())
-                .addLong("JobId", System.currentTimeMillis())
-                .addLong("time", System.currentTimeMillis()).toJobParameters();
+  public void launch() throws Exception {
+    log.info("Batch job starting");
+    JobParameters jobParameters =
+        new JobParametersBuilder()
+            .addString("date", UUID.randomUUID().toString())
+            .addLong("JobId", System.currentTimeMillis())
+            .addLong("time", System.currentTimeMillis())
+            .toJobParameters();
 
-        JobExecution execution = jobLauncher.run(job, jobParameters);
-        log.info("JobExecution:.. " + execution.getStatus());
-    }
+    JobExecution execution = jobLauncher.run(job, jobParameters);
+    log.info("JobExecution:.. " + execution.getStatus());
+  }
 
-    @Override
-    public void run(String... args) throws Exception {
-        scheduleByFixedRate();
-    }
+  @Override
+  public void run(String... args) throws Exception {
+    launch();
+  }
 }

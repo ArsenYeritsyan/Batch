@@ -12,10 +12,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MyCustomWriter implements ItemWriter<Person> {
 
-    private final PersonRepository repository;
+  private final PersonRepository repository;
 
-    @Override
-    public void write(List<? extends Person> list) throws Exception {
-            repository.saveAll(list);
-        }
-    }
+  @Override
+  public void write(List<? extends Person> list) throws Exception {
+    repository.saveAll(list);
+  }
+}
