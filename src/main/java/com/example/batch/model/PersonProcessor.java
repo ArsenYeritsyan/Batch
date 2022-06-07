@@ -1,7 +1,5 @@
 package com.example.batch.model;
 
-import com.example.batch.model.LineDto;
-import com.example.batch.model.Person;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Service;
 
