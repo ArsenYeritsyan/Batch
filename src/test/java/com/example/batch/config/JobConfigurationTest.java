@@ -1,28 +1,43 @@
 package com.example.batch.config;
 
-import com.example.batch.BatchApplicationTests;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.*;
 import org.springframework.batch.test.JobLauncherTestUtils;
-import org.springframework.batch.test.StepScopeTestExecutionListener;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
+import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@Import(JobConfiguration.class)
-@ContextConfiguration(classes = {BatchApplicationTests.class})
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class, StepScopeTestExecutionListener.class})
+@SpringBatchTest
+@ContextConfiguration(classes = JobConfiguration.class)
 class JobConfigurationTest {
 
-    @Autowired
-    private JobLauncherTestUtils jobLauncherTestUtils;
+    private final JobLauncherTestUtils jobLauncherTestUtils = new JobLauncherTestUtils();
+
+
+    @Test
+    public void testMyJob() throws Exception {
+
+        JobParameters jobParameters =
+                new JobParametersBuilder()
+                        .addString("date", UUID.randomUUID().toString())
+                        .addLong("JobId", System.currentTimeMillis())
+                        .addLong("time", System.currentTimeMillis())
+                        .toJobParameters();
+
+        JobExecution jobExecution = this.jobLauncherTestUtils.launchJob(jobParameters);
+
+        Assertions.assertEquals(ExitStatus.COMPLETED, jobExecution.getExitStatus());
+    }
+
+    @Test
+    public void should_process_input_csv_successfully() throws Exception {
+        var jobExecution = jobLauncherTestUtils.launchJob(buildJobParameters());
+        assertThat(jobExecution.getExitStatus().getExitCode()).isEqualTo("COMPLETED");
+    }
 
     @Test
     public void testInjections() {
@@ -34,4 +49,12 @@ class JobConfigurationTest {
         assertThat(jobLauncherTestUtils.launchJob().getExitStatus()).isEqualTo(ExitStatus.COMPLETED);
     }
 
+    private JobParameters buildJobParameters() {
+        return buildJobParameters("classpath:zip/data.zip");
+    }
+
+    private JobParameters buildJobParameters(String filePath) {
+        return new JobParametersBuilder().addString("pathToFile", filePath)
+                .addLong("currentTimeInMillis", System.currentTimeMillis()).toJobParameters();
+    }
 }
